@@ -4,11 +4,14 @@ namespace App\Http\Controllers\API;
 
 use App\DTOs\ServiceCategoryDTO;
 use App\Http\Controllers\Controller;
+use App\Http\Resource\ServiceCategoryResource;
 use App\Services\ServiceCategoryService;
+use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 
 class ServiceCategoryController extends Controller
 {
+    use ApiResponseTrait;
     protected ServiceCategoryService $service;
 
     public function __construct(ServiceCategoryService $service)
@@ -18,32 +21,44 @@ class ServiceCategoryController extends Controller
 
     public function index()
     {
-        return response()->json([
-            'data' => $this->service->getAll()
-        ],200);
-
+        $categories = $this->service->getAll();
+        if (!$categories) {
+            return $this->error('Something is not working. Please try again');
+        }
+        elseif($categories->isEmpty())
+        {
+             return $this->success(ServiceCategoryResource::collection($categories), 'No Data found');
+        }
+        return $this->success(ServiceCategoryResource::collection($categories), 'data retrived successfully');
     }
 
     public function store(Request $request)
     {
-       
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string'
         ]);
         $dto = ServiceCategoryDTO::fromArray($validated);
+        // return $dto;
+        dd(gettype($dto));
         $created = $this->service->create($dto);
-        return response()->json([
-            'message' => 'Created Successfully.',
-            'data' => $created
-        ], 201);
+
+        if (!$created) {
+             return $this->error('Data ta pauya jacche nah', 404);
+        }
+
+         return $this->success(new ServiceCategoryResource($created), 'created', 201);
     }
 
     public function show($id)
     {
-        return response()->json([
-            'data' => $this->service->find($id)
-        ]);
+        $data = $this->service->find($id);
+
+        if (!$data) {
+            return $this->error('Data ta pauya jacche nah', 404);
+        }
+        return $this->success(new ServiceCategoryResource($data), 'Data Found', 302);
     }
 
     public function update(Request $request, $id)
@@ -53,19 +68,21 @@ class ServiceCategoryController extends Controller
             'description' => 'nullable|string'
         ]);
         $dto = ServiceCategoryDTO::fromArray($validated);
-        $updated = $this->service->update(  $dto, $id);
+        $updated = $this->service->update($dto, $id);
 
-        return response()->json([
-            'message' => 'Updated Successfully',
-            'data' =>$updated
-        ],200);
+        if (!$updated) {
+            return $this->error('Update Unsuccessfull', 400);
+        }
+        return $this->success(new ServiceCategoryResource($updated), 'Update Successfull');
     }
 
     public function destroy($id)
     {
-        $this->service->delete($id);
-        return response()->json([
-            'message' => 'Deleted Successfully'
-        ]);
+
+        // return response()->json([
+        //     'message' => 'Deleted Successfully',
+        //     'data' =>  $this->service->delete($id)
+        // ]);
+        return $this->success($this->service->delete($id) , 'deleted successfull', 410);
     }
 }

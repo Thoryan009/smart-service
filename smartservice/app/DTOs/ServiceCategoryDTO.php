@@ -12,10 +12,9 @@ class ServiceCategoryDTO
         $this->name = $name;
         $this->description = $description;
     }
-    
+
     public static function fromArray(array $data): self
     {
-        // return $data;
         return new self(
             name: $data['name'],
             description: $data['description'] ?? null,
@@ -29,5 +28,4 @@ class ServiceCategoryDTO
             'description' => $this->description,
         ];
     }
-
 }

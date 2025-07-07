@@ -48,3 +48,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/update/{id}', [ServiceCategoryController::class, 'update'])->name('category.update');
     Route::get('/destroy/{id}', [ServiceCategoryController::class, 'destroy'])->name('category.destroy');
 });
+
+Route::middleware('auth:sanctum')->group(function() {
+    Route::apiResource('service-categories', ServiceCategoryController::class);
+});
