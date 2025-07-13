@@ -45,10 +45,13 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/all', [ServiceCategoryController::class, 'index'])->name('category.all');
     Route::post('/store', [ServiceCategoryController::class, 'store'])->name('category.store');
     Route::get('/show/{id}', [ServiceCategoryController::class, 'show'])->name('category.show');
-    Route::post('/update/{id}', [ServiceCategoryController::class, 'update'])->name('category.update');
+    // Route::post('/update/{id}', [ServiceCategoryController::class, 'update'])->name('category.update');
     Route::get('/destroy/{id}', [ServiceCategoryController::class, 'destroy'])->name('category.destroy');
 });
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('service-categories', ServiceCategoryController::class);
+});
+Route::middleware('auth:sanctum', 'permission:update service')->group(function () {
+    Route::post('/update/{id}', [ServiceCategoryController::class, 'update'])->name('category.update');
 });

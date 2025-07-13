@@ -24,8 +24,10 @@ class AuthController extends Controller
         $user->password = bcrypt($request->password);
         $user->save();
 
-        $user->assignRole('admin');
+        $user->assignRole('admin', 'customer');
 
+        $user->givePermissionTo('update service');
+        
         return response()->json([
             'success' => true,
             'message' => "User Registered Successfully",
