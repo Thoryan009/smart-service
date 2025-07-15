@@ -1,0 +1,31 @@
+# version: '3.8'
+
+services:
+  laravel:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: smartservice
+      DB_USERNAME: root
+      DB_PASSWORD: secret
+
+  mysql:
+    image: mysql:8.0
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: smartservice
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:

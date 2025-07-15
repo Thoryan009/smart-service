@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WelcomeMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -28,6 +30,9 @@ class AuthController extends Controller
 
         $user->givePermissionTo('update service');
         
+        Mail::to('siamhasan009@gmail.com')->send(new WelcomeMail($user));
+
+
         return response()->json([
             'success' => true,
             'message' => "User Registered Successfully",
